@@ -16,34 +16,34 @@ import java.util.StringTokenizer;
  */
 public class DefineVariablesActivity extends Activity {
     //显示器，用于显示输出结果
-    public EditText input;
+    private EditText input;
     //显示器下方的记忆器，用于记录上一次计算结果
-    public TextView mem;
+    private TextView mem;
     //三角计算时标志显示：角度还是弧度
     private TextView _drg;
     //数字0-9
     private Button[] btn = new Button[10];
     //小提示
-    public TextView tip;
+    private TextView tip;
     //其他按钮
     private Button mc, c, drg, sin, cos, tan, factorial, bksp,
             div, left, right, mul, sqrt, square,
             sub, log, ln, dot, equal, add, exit;
     //判断是否是按＝之后的输入，true表示输入在＝之前，false反之
-    public boolean equals_flag = true;
+    private boolean equals_flag = true;
     //输入控制，true为重新输入，false为接着输入
-    public boolean vbegin = true;
+    private boolean vbegin = true;
     // true表示正确，可以继续输入，false表示有误，输入被锁定
-    public boolean tip_lock = true;
+    private boolean tip_lock = true;
     // 控制DRG按键，true为角度，false为弧度
-    public boolean drg_flag = true;
+    private boolean drg_flag = true;
     //保存原来的算式样子，为了输出时好看，因计算时算式样子被改变
-    public String str_old;
+    private String str_old;
     //变换样子后的式子
-    public String str_new;
+    private String str_new;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //加载布局
         setContentView(R.layout.main);
@@ -118,8 +118,8 @@ public class DefineVariablesActivity extends Activity {
         *键盘命令捕捉
          */
     //命令缓存，用于检测输入合法性
-    String[] tipCommand = new String[500];
-    int tip_i = 0;
+    private String[] tipCommand = new String[500];
+    private int tip_i = 0;
     private View.OnClickListener actionPerformed = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
