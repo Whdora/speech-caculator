@@ -112,6 +112,7 @@ public class DefineVariablesActivity extends Activity {
     private View.OnClickListener actionPerformed = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             //获取按键上的内容
             String command = ((Button) v).getText().toString();
             //获取显示器上的字符串
