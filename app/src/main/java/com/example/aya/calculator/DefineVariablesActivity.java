@@ -17,18 +17,13 @@ import java.util.StringTokenizer;
 public class DefineVariablesActivity extends Activity {
     //显示器，用于显示输出结果
     private EditText input;
-    //显示器下方的记忆器，用于记录上一次计算结果
-    private TextView mem;
-    //三角计算时标志显示：角度还是弧度
-    private TextView _drg;
+    private EditText resultText;
     //数字0-9
     private Button[] btn = new Button[10];
-    //小提示
-    private TextView tip;
     //其他按钮
-    private Button mc, c, drg, sin, cos, tan, factorial, bksp,
-            div, left, right, mul, sqrt, square,
-            sub, log, ln, dot, equal, add, exit;
+    private Button  c,  bksp,
+            div, left,  mul,
+            sub, dot, equal, add, mod;
     //判断是否是按＝之后的输入，true表示输入在＝之前，false反之
     private boolean equals_flag = true;
     //输入控制，true为重新输入，false为接着输入
@@ -50,9 +45,7 @@ public class DefineVariablesActivity extends Activity {
 
         //获取界面元素
         input = (EditText) findViewById(R.id.input);
-        mem = (TextView) findViewById(R.id.mem);
-        _drg = (TextView) findViewById(R.id._drg);
-        tip = (TextView) findViewById(R.id.tip);
+        resultText = (EditText) findViewById(R.id.result);
         btn[0] = (Button) findViewById(R.id.zero);
         btn[1] = (Button) findViewById(R.id.one);
         btn[2] = (Button) findViewById(R.id.two);
@@ -63,54 +56,34 @@ public class DefineVariablesActivity extends Activity {
         btn[7] = (Button) findViewById(R.id.seven);
         btn[8] = (Button) findViewById(R.id.eight);
         btn[9] = (Button) findViewById(R.id.nine);
-        mc = (Button) findViewById(R.id.mc);
         c = (Button) findViewById(R.id.c);
-        drg = (Button) findViewById(R.id.drg);
-        sin = (Button) findViewById(R.id.sin);
-        cos = (Button) findViewById(R.id.cos);
-        tan = (Button) findViewById(R.id.tan);
-        factorial = (Button) findViewById(R.id.factorial);
+
         bksp = (Button) findViewById(R.id.bksp);
         div = (Button) findViewById(R.id.divide);
         left = (Button) findViewById(R.id.left);
-        right = (Button) findViewById(R.id.right);
+
         mul = (Button) findViewById(R.id.mul);
-        sqrt = (Button) findViewById(R.id.sqrt);
-        square = (Button) findViewById(R.id.square);
+
         sub = (Button) findViewById(R.id.sub);
-        log = (Button) findViewById(R.id.log);
-        ln = (Button) findViewById(R.id.ln);
         dot = (Button) findViewById(R.id.dot);
         equal = (Button) findViewById(R.id.equal);
         add = (Button) findViewById(R.id.add);
-        exit = (Button) findViewById(R.id.exit);
+        mod = (Button) findViewById(R.id.mod);
 
         //注册点击事件
         for (int i = 0; i < 10; ++i) {
             btn[i].setOnClickListener(actionPerformed);
         }
-        mc.setOnClickListener(actionPerformed);
         c.setOnClickListener(actionPerformed);
-        drg.setOnClickListener(actionPerformed);
-        sin.setOnClickListener(actionPerformed);
-        cos.setOnClickListener(actionPerformed);
-        tan.setOnClickListener(actionPerformed);
-        factorial.setOnClickListener(actionPerformed);
         bksp.setOnClickListener(actionPerformed);
         div.setOnClickListener(actionPerformed);
         left.setOnClickListener(actionPerformed);
-        right.setOnClickListener(actionPerformed);
         mul.setOnClickListener(actionPerformed);
-        square.setOnClickListener(actionPerformed);
-        sqrt.setOnClickListener(actionPerformed);
         sub.setOnClickListener(actionPerformed);
-        log.setOnClickListener(actionPerformed);
-        ln.setOnClickListener(actionPerformed);
         dot.setOnClickListener(actionPerformed);
         equal.setOnClickListener(actionPerformed);
         add.setOnClickListener(actionPerformed);
-        exit.setOnClickListener(actionPerformed);
-
+        mod.setOnClickListener(actionPerformed);
     }
 
 
@@ -128,10 +101,10 @@ public class DefineVariablesActivity extends Activity {
             //获取显示器上的字符串
             String str = input.getText().toString();
             //检测输入是否合法，判断所按的键是否在按＝之后，是否为运算符
-            if (equals_flag == false && "0123456789.()sincostanlnlogn!+-×÷√^".indexOf(command) != -1) {
+            if (equals_flag == false && "0123456789.()sincostanlnlogn!+-×÷√^%".indexOf(command) != -1) {
                 //检测显示器上的字符串是否合法
                 if (right(str)) {
-                    if ("+-×÷√^".indexOf(command) != -1) {
+                    if ("+-×÷√^%".indexOf(command) != -1) {
                         for (int i = 0; i < str.length(); i++) {
                             tipCommand[tip_i] = String.valueOf(str.charAt(i));
                             tip_i++;
@@ -143,7 +116,7 @@ public class DefineVariablesActivity extends Activity {
                     vbegin = true;
                     tip_i = 0;
                     tip_lock = true;
-                    tip.setText("欢迎使用");
+
                 }
                 equals_flag = true;
             }
@@ -151,22 +124,20 @@ public class DefineVariablesActivity extends Activity {
             if (tip_i > 0)
                 tipChecker(tipCommand[tip_i - 1],command);
             else if (tip_i == 0) tipChecker("#", command);
-            if ("0123456789.()sincostanlnlogn!+-×÷√^".indexOf(command) != -1 && tip_lock) {
+            if ("0123456789.()sincostanlnlogn!+-×÷√^%".indexOf(command) != -1 && tip_lock) {
                 tipCommand[tip_i] = command;
                 tip_i++;
             }
 
             //若输入正确，则将输入信息显示在显示器上
-            if ("0123456789.()sincostanlnlogn!+-×÷√^".indexOf(command) != -1 && tip_lock) {
+            if ("0123456789.()sincostanlnlogn!+-×÷√^%".indexOf(command) != -1 && tip_lock) {
                 print(command);
                 // 如果单击来DRg，则切换当前弧度角度制并将切换后的结果显示到按键上方
             } else if (command.compareTo("DRG") == 0 && tip_lock) {
                 if (drg_flag == true) {
                     drg_flag = false;
-                    _drg.setText(" RAD");
                 } else {
                     drg_flag = true;
-                    _drg.setText(" DEG");
                 }
                 //如果输入的是退格键，并且是在按＝之前
             } else if (command.compareTo("Bksp") == 0 && equals_flag) {
@@ -177,7 +148,7 @@ public class DefineVariablesActivity extends Activity {
                         input.setText("0");
                         vbegin = true;
                         tip_i = 0;
-                        tip.setText("欢迎使用");
+
                     }
                     //一次删除2个字符
                 } else if (tto(str) == 2) {
@@ -187,7 +158,7 @@ public class DefineVariablesActivity extends Activity {
                         input.setText("0");
                         vbegin = true;
                         tip_i = 0;
-                        tip.setText("欢迎使用");
+
                     }
                     // 一次删除一个字符
                 } else if (tto(str) == 1) {
@@ -199,21 +170,21 @@ public class DefineVariablesActivity extends Activity {
                             input.setText("0");
                             vbegin = true;
                             tip_i = 0;
-                            tip.setText("欢迎使用！");
+
                         }
                         //若之前输入的字符串不合法，则删除全部字符
                     } else {
                         input.setText("0");
                         vbegin = true;
                         tip_i = 0;
-                        tip.setText("欢迎使用！");
+
                     }
                 }
                 if (input.getText().toString().compareTo("-") == 0 || equals_flag == false) {
                     input.setText("0");
                     vbegin = true;
                     tip_i = 0;
-                    tip.setText("欢迎使用！");
+
                 }
                 tip_lock = true;
                 if (tip_i > 0)
@@ -225,7 +196,7 @@ public class DefineVariablesActivity extends Activity {
                 vbegin = true;
                 tip_i = 0;
                 tip_lock = true;
-                tip.setText("欢迎使用！");
+
                 //如果输入的清除键
             } else if (command.compareTo("C") == 0) {
                 //将显示器内容设置为0
@@ -235,10 +206,9 @@ public class DefineVariablesActivity extends Activity {
                 tip_lock = true;
                 //表示在输入=之前
                 equals_flag = true;
-                tip.setText("欢迎使用！");
+
                 //如果输入的是mc，则将存储器内容清0
             } else if (command.compareTo("MC") == 0) {
-                mem.setText("0");
                 //如果按exit则退出程序
             } else if (command.compareTo("exit") == 0) {
                 System.exit(0);
@@ -290,7 +260,7 @@ public class DefineVariablesActivity extends Activity {
                     && str.charAt(i) != '.' && str.charAt(i) != '(' && str.charAt(i) != ')' && str.charAt(i) != 's' && str.charAt(i) != 'i'
                     && str.charAt(i) != 'n' && str.charAt(i) != 'c' && str.charAt(i) != 'o' && str.charAt(i) != 't' && str.charAt(i) != 'a'
                     && str.charAt(i) != 'l' && str.charAt(i) != 'g' && str.charAt(i) != '!' && str.charAt(i) != '+' && str.charAt(i) != '-' && str.charAt(i) != '×'
-                    && str.charAt(i) != '÷' && str.charAt(i) != '√' && str.charAt(i) != '^')
+                    && str.charAt(i) != '÷' && str.charAt(i) != '√' && str.charAt(i) != '^' && str.charAt(i) != '%')
                 break;
         }
         if (i == str.length()) {
@@ -611,8 +581,6 @@ public class DefineVariablesActivity extends Activity {
                         "（函数）^(函数),（n!3）^(log100)=36";
                 break;
         }
-        //将信息显示到tip
-        tip.setText(tipMessage);
     }
 
 
@@ -648,7 +616,7 @@ public class DefineVariablesActivity extends Activity {
             char ch_gai='0';
             String num=null;  //记录分段后的数字
             String expression=str;
-            StringTokenizer expToken=new StringTokenizer(expression,"()sctlg!+-×÷√^");
+            StringTokenizer expToken=new StringTokenizer(expression,"()sctlg!+-×÷√^%");
             int i=0;
             while(i<expression.length()){
                 ch=expression.charAt(i);
@@ -680,7 +648,7 @@ public class DefineVariablesActivity extends Activity {
                 if(ch=='(') weightPlus+=4;
                 if(ch==')') weightPlus-=4;
                 if(ch=='-'&&flag==1||ch=='+'||ch=='×'||ch=='÷'||ch=='s'||ch=='c'||ch=='t'||ch=='g'||ch=='l'
-                        ||ch=='!'||ch=='√'||ch=='^'){
+                        ||ch=='!'||ch=='√'||ch=='^'||ch=='%'){
                     switch (ch){
                         //+-的优先级最低，为1
                         case '+':
@@ -690,6 +658,7 @@ public class DefineVariablesActivity extends Activity {
                         //÷×的优先级稍高，为2
                         case '÷':
                         case '×':
+                        case '%':
                             weightTemp=2+weightPlus;
                             break;
                         //sctlg!优先级为3
@@ -725,6 +694,9 @@ public class DefineVariablesActivity extends Activity {
                                     break;
                                 case '×':
                                     number[topNum-2]*=number[topNum-1];
+                                    break;
+                                case '%':
+                                    number[topNum-2]%=number[topNum-1];
                                     break;
                                 //判断除数为0的情况
                                 case '÷':
@@ -920,6 +892,10 @@ public class DefineVariablesActivity extends Activity {
                         number[topNum-1]=n(number[topNum - 1]);
                         topNum++;
                         break;
+                    //%
+                    case '%':
+                        number[topNum-2]%=number[topNum-1];
+                        break;
                 }
                 //取堆栈下一个元素进行运算
                 topNum--;
@@ -933,9 +909,9 @@ public class DefineVariablesActivity extends Activity {
             }
 
             //输出最终结果
-            input.setText(String.valueOf(fP(number[0])));
-            tip.setText("计算完毕，要继续请按归0键");
-            mem.setText(str_old+"="+String.valueOf(fP(number[0])));
+//            input.setText(String.valueOf(fP(number[0])));
+            String resultString = "="+String.valueOf(fP(number[0]));
+            resultText.setText(resultString);
         }
 
         /*控制小数点位数，达到精度
@@ -974,7 +950,6 @@ public class DefineVariablesActivity extends Activity {
                     message="值太大，超出范围";
             }
             input.setText("\""+str+"\""+":"+message);
-            tip.setText(message+"\n"+"计算完毕，要继续请按归0键");
 
         }
 

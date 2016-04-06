@@ -1,201 +1,256 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#808080"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:shrinkColumns="0,1,2,3,4,5"
-    >
+    android:background="#ebebeb"
+    android:orientation="vertical">
 
-    <TableRow >
-        <EditText
-            android:id="@+id/input"
-            android:layout_height="wrap_content"
-            android:layout_span="6"
-            android:cursorVisible="false"
-            android:gravity="right"
-            android:editable="false"
-            android:text="0" />
-    </TableRow>
+    <EditText
+        android:id="@+id/input"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:cursorVisible="false"
+        android:gravity="right"
+        android:editable="false"
+        android:textSize="21dip"
+        android:textColor="#808080"
+        android:background="#ffffff"
+        android:text="0" />
+    <EditText
+        android:id="@+id/result"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:cursorVisible="false"
+        android:gravity="right"
+        android:editable="false"
+        android:textSize="30dip"
+        android:textColor="#000000"
+        android:background="#ffffff"
+        android:text="0" />
 
-    <TableRow>
-        <TextView
-            android:id="@+id/M"
-            android:layout_height="wrap_content"
-            android:text="  MEM:"/>
-        <TextView
-            android:id="@+id/mem"
-            android:layout_span="5"
-            android:layout_height="wrap_content"
-            android:text="0"/>
-    </TableRow>
+    <EditText
+        android:id="@+id/history"
+        android:layout_height="60dp"
+        android:layout_width="match_parent"
+        android:cursorVisible="false"
+        android:gravity="left"
+        android:editable="false"
+        android:textSize="25dip"
+        android:background="#ffffff"
+        android:textColor="#4f4f4f"
+        android:text="历史记录" />
 
-    <TableRow>
-        <TextView
-            android:id="@+id/_drg"
-            android:layout_height="wrap_content"
-            android:text="  DEG"/>
-        <Button
-            android:id="@+id/mc"
-            android:layout_height="wrap_content"
-            android:layout_span="2"
-            android:text="MC"
-            />
-        <Button
-            android:id="@+id/c"
-            android:layout_height="wrap_content"
-            android:layout_span="3"
-            android:text="C"/>
-    </TableRow>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:shrinkColumns="0,1,2,3,4,5"
+        android:layout_gravity="bottom"
 
-    <TableRow>
-        <Button
-            android:id="@+id/drg"
-            android:layout_height="wrap_content"
-            android:text="DRG"/>
-        <Button
-            android:id="@+id/sin"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="sin"/>
-        <Button
-            android:id="@+id/cos"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="cos"/>
-        <Button
-            android:id="@+id/tan"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="tan"/>
-        <Button
-            android:id="@+id/factorial"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="n!"/>
-        <Button
-            android:id="@+id/bksp"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="Bksp"/>
-    </TableRow>
+        >
 
-    <TableRow>
-        <Button
-            android:id="@+id/seven"
+        <TableRow android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="7"/>
-        <Button
-            android:id="@+id/eight"
-            android:layout_height="wrap_content"
-            android:text="8"/>
-        <Button
-            android:id="@+id/nine"
-            android:layout_height="wrap_content"
-            android:text="9"/>
-        <Button
-            android:id="@+id/divide"
-            android:layout_height="wrap_content"
-            android:text="÷"/>
-        <Button
-            android:id="@+id/left"
-            android:layout_height="wrap_content"
-            android:text="("/>
-        <Button
-            android:id="@+id/right"
-            android:layout_height="wrap_content"
-            android:text=")"/>
-    </TableRow>
+            >
 
-    <TableRow>
-        <Button
-            android:id="@+id/four"
-            android:layout_height="wrap_content"
-            android:text="4"/>
-        <Button
-            android:id="@+id/five"
-            android:layout_height="wrap_content"
-            android:text="5"/>
-        <Button
-            android:id="@+id/six"
-            android:layout_height="wrap_content"
-            android:text="6"/>
-        <Button
-            android:id="@+id/mul"
-            android:layout_height="wrap_content"
-            android:text="×"/>
-        <Button
-            android:id="@+id/sqrt"
-            android:layout_height="wrap_content"
-            android:text="√"/>
-        <Button
-            android:id="@+id/square"
-            android:layout_height="wrap_content"
-            android:text="^"/>
-    </TableRow>
+            <Button
+                android:id="@+id/bksp"
+                android:textAllCaps="false"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="Bksp"/>
 
-    <TableRow>
-        <Button
-            android:id="@+id/one"
-            android:layout_height="wrap_content"
-            android:text="1"/>
-        <Button
-            android:id="@+id/two"
-            android:layout_height="wrap_content"
-            android:text="2"/>
-        <Button
-            android:id="@+id/three"
-            android:layout_height="wrap_content"
-            android:text="3"/>
-        <Button
-            android:id="@+id/sub"
-            android:layout_height="wrap_content"
-            android:text="-"/>
-        <Button
-            android:id="@+id/log"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="log"/>
-        <Button
-            android:id="@+id/ln"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:text="ln"/>
-    </TableRow>
+            <Button
+                android:id="@+id/c"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="C"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="1" />
 
-    <TableRow>
-        <Button
-            android:id="@+id/zero"
-            android:layout_height="wrap_content"
-            android:text="0"/>
-        <Button
-            android:id="@+id/dot"
-            android:layout_height="wrap_content"
-            android:text="."/>
-        <Button
-            android:id="@+id/equal"
-            android:layout_height="wrap_content"
-            android:text="="/>
-        <Button
-            android:id="@+id/add"
-            android:layout_height="wrap_content"
-            android:text="+"/>
-        <Button
-            android:id="@+id/exit"
-            android:textAllCaps="false"
-            android:layout_span="2"
-            android:layout_height="wrap_content"
-            android:text="exit"/>
-    </TableRow>
+            <Button
+                android:id="@+id/mod"
+                android:layout_height="wrap_content"
+                android:text="%"
+                android:layout_column="2"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_width="match_parent" />
 
-    <TableRow>
-        <TextView
-            android:id="@+id/T"
-            android:text="  提示："/>
-        <TextView
-            android:id="@+id/tip"
-            android:layout_span="2"
-            android:text="欢迎使用"/>
-    </TableRow>
+            <Button
+                android:id="@+id/divide"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="÷"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="3" />
 
+        </TableRow>
 
-</TableLayout>
+        <TableRow>
+            <Button
+                android:id="@+id/seven"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="7"/>
+            <Button
+                android:id="@+id/eight"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="8"/>
+            <Button
+                android:id="@+id/nine"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="9"/>
+
+            <Button
+                android:id="@+id/mul"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="×"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="3" />
+
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:id="@+id/four"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="4"/>
+            <Button
+                android:id="@+id/five"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="5"/>
+            <Button
+                android:id="@+id/six"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="6"/>
+
+            <Button
+                android:id="@+id/sub"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="-"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="3" />
+
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:id="@+id/one"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="1"/>
+            <Button
+                android:id="@+id/two"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="2"/>
+            <Button
+                android:id="@+id/three"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="3"/>
+
+            <Button
+                android:id="@+id/add"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="3" />
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:id="@+id/zero"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="0"/>
+            <Button
+                android:id="@+id/dot"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:text="."/>
+
+            <Button
+                android:id="@+id/left"
+                android:layout_height="wrap_content"
+                android:text="()"
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="2" />
+
+            <Button
+                android:id="@+id/equal"
+                android:layout_height="wrap_content"
+                android:text="="
+                android:layout_weight="1"
+                android:color="#f7f5f3"
+                android:textSize="25dip"
+                android:textColor="#5a5653"
+                android:layout_column="3" />
+
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>
