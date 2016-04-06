@@ -86,6 +86,22 @@ public class DefineVariablesActivity extends Activity {
         mod.setOnClickListener(actionPerformed);
     }
 
+    private int[]  getBracketNum(String inputString){
+        int leftnum = 0;
+        int rightnum = 0;
+        String inputStrings[] = inputString.split("");
+        String leftBrack = "(";
+        String rightBrack = ")";
+        for(int i =0;i < inputStrings.length;i++){
+            if (inputStrings[i].equals(leftBrack)){
+                leftnum++;
+            } else if(inputStrings[i].equals(rightBrack)){
+                rightnum++;
+            }
+        }
+        int[] bracketnums = {leftnum,rightnum};
+        return bracketnums;
+    }
 
     /*
         *键盘命令捕捉
@@ -130,7 +146,7 @@ public class DefineVariablesActivity extends Activity {
             }
 
             //若输入正确，则将输入信息显示在显示器上
-            if ("0123456789.()sincostanlnlogn!+-×÷√^%".indexOf(command) != -1 && tip_lock) {
+            if ("0123456789.sincostanlnlogn!+-×÷√^%".indexOf(command) != -1 && tip_lock) {
                 print(command);
                 // 如果单击来DRg，则切换当前弧度角度制并将切换后的结果显示到按键上方
             } else if (command.compareTo("DRG") == 0 && tip_lock) {
@@ -206,13 +222,19 @@ public class DefineVariablesActivity extends Activity {
                 tip_lock = true;
                 //表示在输入=之前
                 equals_flag = true;
-
                 //如果输入的是mc，则将存储器内容清0
             } else if (command.compareTo("MC") == 0) {
                 //如果按exit则退出程序
             } else if (command.compareTo("exit") == 0) {
                 System.exit(0);
                 //如果输入的是=，并且输入合法
+            } else if (command.compareTo("()") == 0){
+                int[] bracketNums =getBracketNum(input.getText().toString());
+                if (bracketNums[0] > bracketNums[1]){
+                    print(")");
+                } else {
+                    print("(");
+                }
             } else if (command.compareTo("=") == 0 && tip_lock && right(str) && equals_flag) {
                 tip_i = 0;
                 tip_lock = false;
