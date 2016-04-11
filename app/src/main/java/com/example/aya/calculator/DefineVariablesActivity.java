@@ -1,14 +1,40 @@
 package com.example.aya.calculator;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.RecognizerListener;
+import com.iflytek.cloud.RecognizerResult;
+import com.iflytek.cloud.SpeechSynthesizer;
+import com.iflytek.cloud.SpeechUnderstander;
+import com.iflytek.cloud.SpeechUnderstanderListener;
+import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.cloud.TextUnderstander;
+import com.iflytek.cloud.TextUnderstanderListener;
+import com.iflytek.cloud.UnderstanderResult;
+import com.iflytek.cloud.ui.RecognizerDialog;
+import com.iflytek.cloud.ui.RecognizerDialogListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -23,7 +49,7 @@ public class DefineVariablesActivity extends Activity {
     //其他按钮
     private Button  c,  bksp,
             div, left,  mul,
-            sub, dot, equal, add, mod;
+            sub, dot, equal, add, mod, speech_btn;
     //判断是否是按＝之后的输入，true表示输入在＝之前，false反之
     private boolean equals_flag = true;
     //输入控制，true为重新输入，false为接着输入
@@ -36,6 +62,13 @@ public class DefineVariablesActivity extends Activity {
     private String str_old;
     //变换样子后的式子
     private String str_new;
+
+    // 语义理解对象（语音到语义）。
+    private SpeechUnderstander mSpeechUnderstander;
+
+    private SpeechSynthesizer mTts;
+
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +102,7 @@ public class DefineVariablesActivity extends Activity {
         equal = (Button) findViewById(R.id.equal);
         add = (Button) findViewById(R.id.add);
         mod = (Button) findViewById(R.id.mod);
+        speech_btn = (Button) findViewById(R.id.speech_button);
 
         //注册点击事件
         for (int i = 0; i < 10; ++i) {
@@ -84,7 +118,28 @@ public class DefineVariablesActivity extends Activity {
         equal.setOnClickListener(actionPerformed);
         add.setOnClickListener(actionPerformed);
         mod.setOnClickListener(actionPerformed);
+        speech_btn.setOnClickListener(actionSpeech);
+
+        SpeechUtility.createUtility(getBaseContext(), SpeechConstant.APPID + "=565d5e14");
+        // 初始化对象
+        mSpeechUnderstander = SpeechUnderstander.createUnderstander(DefineVariablesActivity.this, mSpeechUdrInitListener);
+
+        mTts = SpeechSynthesizer.createSynthesizer(DefineVariablesActivity.this, null);
     }
+
+    /**
+     * 初始化监听器（语音到语义）。
+     */
+    private InitListener mSpeechUdrInitListener = new InitListener() {
+
+        @Override
+        public void onInit(int code) {
+
+            if (code != ErrorCode.SUCCESS) {
+                Log.v("error", "speechUnderstanderListener init() code = " + code);
+            }
+        }
+    };
 
     private int[]  getBracketNum(String inputString){
         int leftnum = 0;
@@ -102,6 +157,164 @@ public class DefineVariablesActivity extends Activity {
         int[] bracketnums = {leftnum,rightnum};
         return bracketnums;
     }
+
+    private RecognizerListener mRecognizerListener = new RecognizerListener() {
+        // 音量变化
+        public void onVolumeChanged(int volume, byte[] data) {}
+        // 返回结果
+        public void onResult(final RecognizerResult result, boolean isLast) {} // 开始说话
+        public void onBeginOfSpeech() {}
+        // 结束说话
+        public void onEndOfSpeech() {}
+        // 错误回调
+        public void onError(SpeechError error) {}
+        // 事件回调
+        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {}
+    };
+
+    private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener(){
+        @Override
+        public void onResult(RecognizerResult recognizerResult, boolean b) {
+            Log.v("result",recognizerResult.getResultString());
+            String text = recognizerResult.getResultString();
+            Log.v("result", text);
+            Map<String,Object> resultMap = getMapForJson(text);
+            if(resultMap.get("answer") != null){
+                JSONObject answerJsonObject =(JSONObject)resultMap.get("answer");
+                String resultString = null;
+                try {
+                    resultString = (String) answerJsonObject.get("text");
+                    mTts.startSpeaking(resultString, null);
+                    String showText = resultString.substring(2);
+                    showText = "=" + showText;
+                    resultText.setText(showText);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        @Override
+        public void onError(SpeechError speechError) {
+
+        }
+    };
+
+    public static Map<String, Object> getMapForJson(String jsonStr){
+        JSONObject jsonObject ;
+        try {
+            jsonObject = new JSONObject(jsonStr);
+
+            Iterator<String> keyIter= jsonObject.keys();
+            String key;
+            Object value ;
+            Map<String, Object> valueMap = new HashMap<String, Object>();
+            while (keyIter.hasNext()) {
+                key = keyIter.next();
+                value = jsonObject.get(key);
+                valueMap.put(key, value);
+            }
+            return valueMap;
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
+    private SpeechUnderstanderListener mUnderstanderListener = new SpeechUnderstanderListener(){
+        public void onResult(UnderstanderResult result) {
+            String text = result.getResultString();
+            Log.v("result", text);
+            Map<String,Object> resultMap = getMapForJson(text);
+            if(resultMap.get("answer") != null){
+                JSONObject answerJsonObject =(JSONObject)resultMap.get("answer");
+                String resultString = null;
+                try {
+                    resultString = (String) answerJsonObject.get("text");
+                    mTts.startSpeaking(resultString, null);
+                    String showText = resultString.substring(2);
+                    showText = "=" + showText;
+                    resultText.setText(showText);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        public void onError(SpeechError error) {}//会话发生错误回调接口
+        public void onBeginOfSpeech() {
+            Log.v("result","onBeginOfSpeech");
+        }//开始录音
+        public void onVolumeChanged(int volume, byte[] data){} //volume音量值0~30,data音频数据 public void onEndOfSpeech() {}//结束录音
+        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {}//扩展用接口
+
+        @Override
+        public void onEndOfSpeech() {
+            Log.v("result","onEndOfSpeech");
+        }
+    };
+
+    public void setParam(){
+        // 设置语言
+        mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
+        // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
+        // 注：AUDIO_FORMAT参数语记需要更新版本才能生效
+        mSpeechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory()+"/msc/sud.wav");
+    }
+
+    int ret = 0;// 函数调用返回值
+
+    private View.OnClickListener actionSpeech = new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            setParam();
+//            ret = mSpeechUnderstander.startUnderstanding(mUnderstanderListener);
+//            if(ret != 0){
+//                Log.v("error:","语义理解失败,错误码:"	+ ret);
+//            }else {
+//                Log.v("begin:","begin"	+ ret);
+//            }
+//            SpeechUtility.createUtility(getBaseContext(), SpeechConstant.APPID + "=5703ca03");
+//            TextUnderstanderListener searchListener = new TextUnderstanderListener(){
+//                //语义结果回调
+//                public void onResult(UnderstanderResult result){
+//                    Log.v("result :",result.getResultString());
+//                } //语义错误回调
+//                public void onError(SpeechError error) {}
+//            };
+//            //创建文本语义理解对象
+//            TextUnderstander mTextUnderstander = TextUnderstander.createTextUnderstander(DefineVariablesActivity.this, null); //开始语义理解
+//            mTextUnderstander.understandText("7+8等于几", searchListener);
+//初始化监听器
+
+
+// 识别监听器
+            SpeechUtility.createUtility(getBaseContext(), SpeechConstant.APPID + "=5703ca03");
+            RecognizerDialog mDialog = new RecognizerDialog(DefineVariablesActivity.this, new InitListener(){
+                @Override
+                public void onInit(int i) {
+
+                }
+            }); //2.设置accent、language等参数
+            mDialog.setParameter(SpeechConstant.LANGUAGE, "zh_cn"); mDialog.setParameter(SpeechConstant.ACCENT, "mandarin");
+            //若要将UI控件用于语义理解,必须添加以下参数设置,设置之后onResult回调返回将是语义理解 //结果
+            mDialog.setParameter(SpeechConstant.DOMAIN, "iat");
+            mDialog.setParameter(SpeechConstant.RESULT_TYPE, "json");
+            mDialog.setParameter(SpeechConstant.NLP_VERSION, "2.0");
+            mDialog.setParameter(SpeechConstant.PARAMS , "sch=1");
+//3.设置回调接口
+            mDialog.setListener(mRecognizerDialogListener);
+
+            //4.显示dialog,接收语音输入
+            mDialog.show();
+
+        }
+    };
+
 
     /*
         *键盘命令捕捉

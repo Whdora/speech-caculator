@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/ttsdemo.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/ttsdemo.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/main.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/main.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/understander.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/understander.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/isedemo.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/isedemo.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/list_items.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/list_items.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/iatdemo.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/iatdemo.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/title.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/title.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/layout/isrdemo.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/layout/isrdemo.xml"
+    }
+]

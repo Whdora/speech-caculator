@@ -41,25 +41,25 @@
                 android:text="0" />
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="vertical"
-        android:layout_margin="10dp"
-        android:background="@drawable/btn_search_sel">
-        <EditText
-            android:id="@+id/history"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:cursorVisible="false"
-            android:gravity="left"
-            android:editable="false"
-            android:textSize="21dip"
-            android:background="#ffffff"
-            android:textColor="#4f4f4f"
-            android:padding="10dp"
-            android:text="历史记录" />
-    </LinearLayout>
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_margin="10dp"-->
+        <!--android:background="@drawable/btn_search_sel">-->
+        <!--<EditText-->
+            <!--android:id="@+id/history"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:cursorVisible="false"-->
+            <!--android:gravity="left"-->
+            <!--android:editable="false"-->
+            <!--android:textSize="21dip"-->
+            <!--android:background="#ffffff"-->
+            <!--android:textColor="#4f4f4f"-->
+            <!--android:padding="10dp"-->
+            <!--android:text="历史记录" />-->
+    <!--</LinearLayout>-->
 
 
     <TableLayout
@@ -84,19 +84,21 @@
                 android:textColor="@drawable/btn_textcolor"
                 android:background="@drawable/btn_background"
                 android:layout_margin="5dp"
-                android:text="Bksp"/>
+                android:drawableLeft="@mipmap/dele"
+                android:paddingLeft="15dp"/>
 
             <Button
                 android:id="@+id/c"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="C"
                 android:layout_weight="1"
                 android:textSize="25dip"
                 android:textColor="@drawable/btn_textcolor"
                 android:background="@drawable/btn_background"
                 android:layout_margin="5dp"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:drawableLeft="@mipmap/clear"
+                android:paddingLeft="15dp" />
 
             <Button
                 android:id="@+id/mod"
@@ -310,5 +312,35 @@
         </TableRow>
 
     </TableLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ebebeb"
+        android:orientation="horizontal">
+        <ImageButton android:id="@+id/show_keyboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@mipmap/ico_key"
+            />
+        <Button
+            android:id="@+id/speech_button"
+            android:layout_height="wrap_content"
+            android:text="按住说话"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:background="@drawable/num_button"
+            android:color="#f7f5f3"
+            android:textSize="25dip"
+            android:layout_margin="15dp"
+            android:textColor="#7f8388"
+            android:layout_column="3"
+            android:drawableLeft="@mipmap/ico_mic"
+            android:paddingLeft="60dp"
+            android:paddingRight="40dp"
+            />
+    </LinearLayout>
+
 
 </LinearLayout>

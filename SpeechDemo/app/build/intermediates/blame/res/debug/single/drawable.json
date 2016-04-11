@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/drawable/setting_p.png",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/drawable/setting_p.png"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/drawable/list_bg_color.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/drawable/list_bg_color.xml"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/drawable/setting.png",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/drawable/setting.png"
+    },
+    {
+        "merged": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/build/intermediates/res/merged/debug/drawable/main_setting_btn_np.xml",
+        "source": "/Users/yeahugo/Documents/project/Demo/caculator/SpeechDemo/app/src/main/res/drawable/main_setting_btn_np.xml"
+    }
+]
