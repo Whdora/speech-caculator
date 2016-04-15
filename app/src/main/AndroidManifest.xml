@@ -2,7 +2,7 @@
     package="com.example.aya.calculator">
 
     <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme">
+        android:icon="@mipmap/ic_launcher" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".DefineVariablesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

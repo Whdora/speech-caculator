@@ -2,12 +2,22 @@ package com.example.aya.calculator;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.database.DataSetObserver;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.iflytek.cloud.ErrorCode;
@@ -50,6 +60,7 @@ public class DefineVariablesActivity extends Activity {
     private Button  c,  bksp,
             div, left,  mul,
             sub, dot, equal, add, mod, speech_btn;
+    private ImageButton show_keyboard;
     //判断是否是按＝之后的输入，true表示输入在＝之前，false反之
     private boolean equals_flag = true;
     //输入控制，true为重新输入，false为接着输入
@@ -62,6 +73,10 @@ public class DefineVariablesActivity extends Activity {
     private String str_old;
     //变换样子后的式子
     private String str_new;
+    //键盘view
+    private View keyboardView;
+
+    private ListView listView;
 
     // 语义理解对象（语音到语义）。
     private SpeechUnderstander mSpeechUnderstander;
@@ -75,6 +90,11 @@ public class DefineVariablesActivity extends Activity {
         super.onCreate(savedInstanceState);
         //加载布局
         setContentView(R.layout.main);
+
+        listView = (ListView)findViewById(R.id.history_listview);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1);
+        listAdapter.add("您还没有计算过哦");
+        listView.setAdapter(listAdapter);
 
         //获取界面元素
         input = (EditText) findViewById(R.id.input);
@@ -91,6 +111,8 @@ public class DefineVariablesActivity extends Activity {
         btn[9] = (Button) findViewById(R.id.nine);
         c = (Button) findViewById(R.id.c);
 
+        keyboardView = (View)findViewById(R.id.keyboard);
+
         bksp = (Button) findViewById(R.id.bksp);
         div = (Button) findViewById(R.id.divide);
         left = (Button) findViewById(R.id.left);
@@ -103,6 +125,8 @@ public class DefineVariablesActivity extends Activity {
         add = (Button) findViewById(R.id.add);
         mod = (Button) findViewById(R.id.mod);
         speech_btn = (Button) findViewById(R.id.speech_button);
+
+        show_keyboard = (ImageButton) findViewById(R.id.show_keyboard);
 
         //注册点击事件
         for (int i = 0; i < 10; ++i) {
@@ -118,14 +142,36 @@ public class DefineVariablesActivity extends Activity {
         equal.setOnClickListener(actionPerformed);
         add.setOnClickListener(actionPerformed);
         mod.setOnClickListener(actionPerformed);
-        speech_btn.setOnClickListener(actionSpeech);
+        speech_btn.setOnLongClickListener(actionSpeech);
+        show_keyboard.setOnClickListener(showKeyboardPerformed);
 
-        SpeechUtility.createUtility(getBaseContext(), SpeechConstant.APPID + "=565d5e14");
+//        SpeechUtility.createUtility(getBaseContext(), SpeechConstant.APPID + "=565d5e14");
+        SpeechUtility.createUtility(getBaseContext(), SpeechConstant.APPID + "=5703ca03");
         // 初始化对象
         mSpeechUnderstander = SpeechUnderstander.createUnderstander(DefineVariablesActivity.this, mSpeechUdrInitListener);
 
         mTts = SpeechSynthesizer.createSynthesizer(DefineVariablesActivity.this, null);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private View.OnClickListener showKeyboardPerformed = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            if (keyboardView.getVisibility() == View.GONE){
+                keyboardView.setVisibility(View.VISIBLE);
+                show_keyboard.setBackgroundResource(R.mipmap.ico_key_on);
+            } else {
+                keyboardView.setVisibility(View.GONE);
+                show_keyboard.setBackgroundResource(R.mipmap.ico_key);
+            }
+        }
+    };
 
     /**
      * 初始化监听器（语音到语义）。
@@ -179,18 +225,22 @@ public class DefineVariablesActivity extends Activity {
             String text = recognizerResult.getResultString();
             Log.v("result", text);
             Map<String,Object> resultMap = getMapForJson(text);
-            if(resultMap.get("answer") != null){
-                JSONObject answerJsonObject =(JSONObject)resultMap.get("answer");
-                String resultString = null;
-                try {
-                    resultString = (String) answerJsonObject.get("text");
-                    mTts.startSpeaking(resultString, null);
-                    String showText = resultString.substring(2);
-                    showText = "=" + showText;
-                    resultText.setText(showText);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            if(resultMap.get("result") != null){
+                String resultString = String.valueOf(resultMap.get("result"));
+                String expression = String.valueOf(resultMap.get("expression"));
+                input.setText(expression);
+                resultText.setText(resultString);
+                mTts.startSpeaking(resultString, null);
+//                JSONObject answerJsonObject =(JSONObject)resultMap.get("answer");
+//                String resultString = null;
+//                try {
+//                    resultString = (String) answerJsonObject.get("text");
+//                    mTts.startSpeaking(resultString, null);
+//                    String showText = resultString.substring(2);
+//                    resultText.setText(showText);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
             }
         }
@@ -268,9 +318,9 @@ public class DefineVariablesActivity extends Activity {
 
     int ret = 0;// 函数调用返回值
 
-    private View.OnClickListener actionSpeech = new View.OnClickListener(){
+    private View.OnLongClickListener actionSpeech = new View.OnLongClickListener(){
         @Override
-        public void onClick(View v){
+        public boolean onLongClick(View v){
             setParam();
 //            ret = mSpeechUnderstander.startUnderstanding(mUnderstanderListener);
 //            if(ret != 0){
@@ -305,15 +355,17 @@ public class DefineVariablesActivity extends Activity {
             mDialog.setParameter(SpeechConstant.DOMAIN, "iat");
             mDialog.setParameter(SpeechConstant.RESULT_TYPE, "json");
             mDialog.setParameter(SpeechConstant.NLP_VERSION, "2.0");
-            mDialog.setParameter(SpeechConstant.PARAMS , "sch=1");
+            mDialog.setParameter(SpeechConstant.PARAMS, "sch=1");
 //3.设置回调接口
             mDialog.setListener(mRecognizerDialogListener);
 
             //4.显示dialog,接收语音输入
             mDialog.show();
-
+            return true;
         }
     };
+
+
 
 
     /*
@@ -325,7 +377,6 @@ public class DefineVariablesActivity extends Activity {
     private View.OnClickListener actionPerformed = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             //获取按键上的内容
             String command = ((Button) v).getText().toString();
             //获取显示器上的字符串
@@ -359,6 +410,72 @@ public class DefineVariablesActivity extends Activity {
                 tip_i++;
             }
 
+            if (v.getId() == R.id.bksp && str.length() > 0) {
+                if (equals_flag) {
+                    if (tto(str) == 3) {
+                        if (str.length() > 3)
+                            input.setText(str.substring(0, str.length() - 3));
+                        else if (str.length() == 3) {
+                            input.setText("0");
+                            vbegin = true;
+                            tip_i = 0;
+                        }
+                        //一次删除2个字符
+                    } else if (tto(str) == 2) {
+                        if (str.length() > 2)
+                            input.setText(str.substring(0, str.length() - 2));
+                        else if (str.length() == 2) {
+                            input.setText("0");
+                            vbegin = true;
+                            tip_i = 0;
+                        }
+                        // 一次删除一个字符
+                    } else if (tto(str) == 1) {
+                        //若之前输入的字符串合法，则删除一个字符
+                        if (right(str)) {
+                            if (str.length() > 1) {
+                                input.setText(str.substring(0, str.length() - 1));
+                            } else if (str.length() == 1) {
+                                input.setText("0");
+                                vbegin = true;
+                                tip_i = 0;
+                            }
+                            //若之前输入的字符串不合法，则删除全部字符
+                        } else {
+                            input.setText("0");
+                            vbegin = true;
+                            tip_i = 0;
+                        }
+                    }
+                    if (input.getText().toString().compareTo("-") == 0 || equals_flag == false) {
+                        input.setText("0");
+                        vbegin = true;
+                        tip_i = 0;
+                    }
+                    tip_lock = true;
+                    if (tip_i > 0)
+                        tip_i--;
+                    //如果是在按=之后输入退格键
+                } else {
+                    //将显示器内容设置为0
+                    input.setText("0");
+                    vbegin = true;
+                    tip_i = 0;
+                    tip_lock = true;
+
+                    //如果输入的清除键
+                }
+            }  else if ( v.getId()  == R.id.c) {
+                //将显示器内容设置为0
+                input.setText("0");
+                vbegin = true;
+                tip_i = 0;
+                tip_lock = true;
+                //表示在输入=之前
+                equals_flag = true;
+                //如果输入的是mc，则将存储器内容清0
+            }
+
             //若输入正确，则将输入信息显示在显示器上
             if ("0123456789.sincostanlnlogn!+-×÷√^%".indexOf(command) != -1 && tip_lock) {
                 print(command);
@@ -370,7 +487,7 @@ public class DefineVariablesActivity extends Activity {
                     drg_flag = true;
                 }
                 //如果输入的是退格键，并且是在按＝之前
-            } else if (command.compareTo("Bksp") == 0 && equals_flag) {
+            } else if (v.getId() == R.id.bksp && equals_flag) {
                 if (tto(str) == 3) {
                     if (str.length() > 3)
                         input.setText(str.substring(0, str.length() - 3));
@@ -420,23 +537,6 @@ public class DefineVariablesActivity extends Activity {
                 if (tip_i > 0)
                     tip_i--;
                 //如果是在按=之后输入退格键
-            } else if (command.compareTo("Bksp") == 0 && equals_flag == false) {
-                //将显示器内容设置为0
-                input.setText("0");
-                vbegin = true;
-                tip_i = 0;
-                tip_lock = true;
-
-                //如果输入的清除键
-            } else if (command.compareTo("C") == 0) {
-                //将显示器内容设置为0
-                input.setText("0");
-                vbegin = true;
-                tip_i = 0;
-                tip_lock = true;
-                //表示在输入=之前
-                equals_flag = true;
-                //如果输入的是mc，则将存储器内容清0
             } else if (command.compareTo("MC") == 0) {
                 //如果按exit则退出程序
             } else if (command.compareTo("exit") == 0) {
@@ -819,6 +919,13 @@ public class DefineVariablesActivity extends Activity {
         }
     }
 
+    public static boolean isNumberInt(String str) {// 判断整型
+        return str.matches("^\\d+$$");
+    }
+
+    public static boolean isNumberPointZero(String str) {// 判断小数点后是否是零
+        return str.matches("^\\d+.0$$");
+    }
 
 /*
  *整个计算核心，只要将表达式的整个字符串传入Calc.process()就可以实行计算了
@@ -852,6 +959,7 @@ public class DefineVariablesActivity extends Activity {
             char ch_gai='0';
             String num=null;  //记录分段后的数字
             String expression=str;
+            boolean haveDecemal = false;
             StringTokenizer expToken=new StringTokenizer(expression,"()sctlg!+-×÷√^%");
             int i=0;
             while(i<expression.length()){
@@ -875,6 +983,10 @@ public class DefineVariablesActivity extends Activity {
                     //将正负符号转移给数字
                     if(num.compareTo(".")==0)  number[topNum++]=0;
                     else {
+                        if (!isNumberInt(num))
+                        {
+                            haveDecemal = true;
+                        }
                         number[topNum++]=Double.parseDouble(num)*flag;
                         flag=1;
                     }
@@ -1146,7 +1258,16 @@ public class DefineVariablesActivity extends Activity {
 
             //输出最终结果
 //            input.setText(String.valueOf(fP(number[0])));
-            String resultString = "="+String.valueOf(fP(number[0]));
+            String resultString;
+            if (!haveDecemal && isNumberPointZero(String.valueOf(fP(number[0]))))
+            {
+                resultString = String.valueOf((int)(number[0]));
+            } else {
+//                resultString = String.valueOf(number[0]);
+                resultString = String.valueOf(fP(number[0]));
+            }
+
+            input.setText(resultString);
             resultText.setText(resultString);
         }
 
@@ -1155,6 +1276,7 @@ public class DefineVariablesActivity extends Activity {
          */
         private double fP(double n){
             DecimalFormat format=new DecimalFormat("0.#############");
+//            DecimalFormat format = new DecimalFormat("#,##0.00");
             return Double.parseDouble(format.format(n));
         }
 
@@ -1188,11 +1310,6 @@ public class DefineVariablesActivity extends Activity {
             input.setText("\""+str+"\""+":"+message);
 
         }
-
-
-
-
-
 }
 
 
