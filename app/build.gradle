@@ -26,4 +26,5 @@ dependencies {
     compile files('src/androidTest/java/libs/Sunflower.jar')
     compile files('src/main/jniLibs/Msc.jar')
     compile files('src/main/jniLibs/Sunflower.jar')
+    compile files('src/main/jniLibs/fastjson-1.1.37.jar')
 }

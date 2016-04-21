@@ -1,6 +1,7 @@
 package com.example.aya.calculator;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,6 +22,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -37,13 +40,17 @@ import com.iflytek.cloud.UnderstanderResult;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import com.alibaba.fastjson.JSONArray;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -85,16 +92,42 @@ public class DefineVariablesActivity extends Activity {
 
     private SharedPreferences mSharedPreferences;
 
+    private void addHistory(String new_record){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();//获取编辑器
+        String historyStr = mSharedPreferences.getString("history", "[]");
+        JSONArray jsonArray = JSON.parseArray(historyStr);
+        jsonArray.add(new_record);
+        String newJsonStr = JSON.toJSONString(jsonArray);
+        editor.putString("history", newJsonStr);
+        editor.commit();
+        MyListViewAdapter adapter =  (MyListViewAdapter)listView.getAdapter();
+        adapter.addItem(new_record);
+//        adapter.add(new_record);
+
+    }
+
+    private JSONArray getHistoryRecord(){
+        String historyStr = mSharedPreferences.getString("history","[]");
+        JSONArray jsonArray = JSON.parseArray(historyStr);
+        return jsonArray;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //加载布局
         setContentView(R.layout.main);
-
+        mSharedPreferences = getSharedPreferences("caculator", Context.MODE_PRIVATE);
         listView = (ListView)findViewById(R.id.history_listview);
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1);
-        listAdapter.add("您还没有计算过哦");
+        JSONArray jsonArray = getHistoryRecord();
+        MyListViewAdapter listAdapter = new MyListViewAdapter(this,jsonArray);
+
+        if (jsonArray.size() == 0){
+            listAdapter.addItem("您还没有计算过哦");
+        }
+
         listView.setAdapter(listAdapter);
+        listAdapter.notifyDataSetChanged();
 
         //获取界面元素
         input = (EditText) findViewById(R.id.input);
@@ -221,27 +254,15 @@ public class DefineVariablesActivity extends Activity {
     private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener(){
         @Override
         public void onResult(RecognizerResult recognizerResult, boolean b) {
-            Log.v("result",recognizerResult.getResultString());
             String text = recognizerResult.getResultString();
-            Log.v("result", text);
             Map<String,Object> resultMap = getMapForJson(text);
-            if(resultMap.get("result") != null){
+            if(resultMap != null && resultMap.containsKey("result")){
                 String resultString = String.valueOf(resultMap.get("result"));
                 String expression = String.valueOf(resultMap.get("expression"));
+                ((MyListViewAdapter)listView.getAdapter()).addItem(expression);
                 input.setText(expression);
                 resultText.setText(resultString);
                 mTts.startSpeaking(resultString, null);
-//                JSONObject answerJsonObject =(JSONObject)resultMap.get("answer");
-//                String resultString = null;
-//                try {
-//                    resultString = (String) answerJsonObject.get("text");
-//                    mTts.startSpeaking(resultString, null);
-//                    String showText = resultString.substring(2);
-//                    resultText.setText(showText);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
             }
         }
 
@@ -474,10 +495,13 @@ public class DefineVariablesActivity extends Activity {
                 //表示在输入=之前
                 equals_flag = true;
                 //如果输入的是mc，则将存储器内容清0
+            } else if( v.getId() == R.id.mod){
+                str = str + "%";
+                process(str);
             }
 
             //若输入正确，则将输入信息显示在显示器上
-            if ("0123456789.sincostanlnlogn!+-×÷√^%".indexOf(command) != -1 && tip_lock) {
+            if ("0123456789.sincostanlnlogn!+-×÷√^".indexOf(command) != -1 && tip_lock) {
                 print(command);
                 // 如果单击来DRg，则切换当前弧度角度制并将切换后的结果显示到按键上方
             } else if (command.compareTo("DRG") == 0 && tip_lock) {
@@ -992,6 +1016,11 @@ public class DefineVariablesActivity extends Activity {
                     }
                 }
 
+                if(ch_gai == '%'){
+                    Double newTopNum = new Double(number[topNum-1]/100);
+                    number[topNum-1] = newTopNum;
+                }
+
                 //计算运算符的优先级
                 if(ch=='(') weightPlus+=4;
                 if(ch==')') weightPlus-=4;
@@ -1043,9 +1072,10 @@ public class DefineVariablesActivity extends Activity {
                                 case '×':
                                     number[topNum-2]*=number[topNum-1];
                                     break;
-                                case '%':
-                                    number[topNum-2]%=number[topNum-1];
-                                    break;
+//                                case '%':
+//                                    number[topNum-2] = number[topNum-2]/100;
+////                                    number[topNum-2]%=number[topNum-1];
+//                                    break;
                                 //判断除数为0的情况
                                 case '÷':
                                     if(number[topNum-1]==0){
@@ -1242,7 +1272,9 @@ public class DefineVariablesActivity extends Activity {
                         break;
                     //%
                     case '%':
-                        number[topNum-2]%=number[topNum-1];
+                        Log.v("topnum",String.valueOf(number[topNum]));
+                        number[topNum] = number[topNum] * 0.01;
+//                        number[topNum-2]%=number[topNum-1];
                         break;
                 }
                 //取堆栈下一个元素进行运算
@@ -1269,6 +1301,8 @@ public class DefineVariablesActivity extends Activity {
 
             input.setText(resultString);
             resultText.setText(resultString);
+
+            addHistory(str);
         }
 
         /*控制小数点位数，达到精度
