@@ -1295,8 +1295,8 @@ public class DefineVariablesActivity extends Activity {
             {
                 resultString = String.valueOf((int)(number[0]));
             } else {
-//                resultString = String.valueOf(number[0]);
-                resultString = String.valueOf(fP(number[0]));
+//                resultString = String.valueOf(fP(number[0]));
+                resultString = fP(number[0]);
             }
 
             input.setText(resultString);
@@ -1308,10 +1308,12 @@ public class DefineVariablesActivity extends Activity {
         /*控制小数点位数，达到精度
         *本格式进度为15位
          */
-        private double fP(double n){
-            DecimalFormat format=new DecimalFormat("0.#############");
+        private String fP(double n){
+            DecimalFormat format=new DecimalFormat("0.##############");
+//            Double result =  Double.parseDouble(format.format(n));
+            String result = format.format(n);
 //            DecimalFormat format = new DecimalFormat("#,##0.00");
-            return Double.parseDouble(format.format(n));
+            return result;
         }
 
         /*
